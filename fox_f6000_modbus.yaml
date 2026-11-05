@@ -1,0 +1,140 @@
+# Fox ESS F6000 read locally from its stock Wi-Fi logger (Modbus TCP, unit 1, input registers 39xxx).
+# Add to configuration.yaml and restart Home Assistant. Replace LOGGER_IP (reserve it in your router).
+# Read-only. The logger accepts only one Modbus connection at a time.
+
+modbus:
+  - name: fox_f6000_local
+    type: tcp
+    host: LOGGER_IP
+    port: 502
+    timeout: 5
+    delay: 1
+    sensors:
+      - name: Fox F6000 AC power
+        unique_id: fox_f6000_ac_power
+        slave: 1
+        address: 39134
+        input_type: input
+        data_type: int32
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 PV power
+        unique_id: fox_f6000_pv_power
+        slave: 1
+        address: 39118
+        input_type: input
+        data_type: int32
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 PV1 voltage
+        unique_id: fox_f6000_pv1_voltage
+        slave: 1
+        address: 39070
+        input_type: input
+        data_type: uint16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 PV1 current
+        unique_id: fox_f6000_pv1_current
+        slave: 1
+        address: 39071
+        input_type: input
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: "A"
+        device_class: current
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 PV2 voltage
+        unique_id: fox_f6000_pv2_voltage
+        slave: 1
+        address: 39072
+        input_type: input
+        data_type: uint16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 PV2 current
+        unique_id: fox_f6000_pv2_current
+        slave: 1
+        address: 39073
+        input_type: input
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: "A"
+        device_class: current
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 grid voltage
+        unique_id: fox_f6000_grid_voltage
+        slave: 1
+        address: 39123
+        input_type: input
+        data_type: uint16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 AC current
+        unique_id: fox_f6000_ac_current
+        slave: 1
+        address: 39127
+        input_type: input
+        data_type: uint16
+        scale: 0.001
+        precision: 2
+        unit_of_measurement: "A"
+        device_class: current
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 frequency
+        unique_id: fox_f6000_frequency
+        slave: 1
+        address: 39139
+        input_type: input
+        data_type: uint16
+        scale: 0.01
+        precision: 2
+        unit_of_measurement: "Hz"
+        device_class: frequency
+        state_class: measurement
+        scan_interval: 15
+      - name: Fox F6000 temperature
+        unique_id: fox_f6000_temperature
+        slave: 1
+        address: 39141
+        input_type: input
+        data_type: uint16
+        scale: 0.1
+        precision: 1
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scan_interval: 15
+
+sensor:
+  # The logger doesn't expose energy totals, so count kWh from AC power.
+  - platform: integration
+    name: Fox F6000 energy
+    unique_id: fox_f6000_energy
+    source: sensor.fox_f6000_ac_power
+    method: left
+    unit_prefix: k
+    round: 3
+    max_sub_interval:
+      minutes: 2
